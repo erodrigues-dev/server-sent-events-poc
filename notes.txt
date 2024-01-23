@@ -1,0 +1,25 @@
+Redis: sessao
+
+- local/medico
+- especialidade/exame
+- pagamento
+- horarios: unidades
+
+- state: { unidades:[x,y,z], step: 'expansao' }
+
+client x -> 
+  -> elegibilidade
+    -> unidades
+  -> close
+  -> reconectou
+  -> expansao
+    -> unidades
+  -> busca de agenda
+    -> busca semana 1
+    -> busca semana 2
+    -> busca semana 3
+      -> caiu
+    -> busca semana 4
+
+client y -> 
+  -> elegibilidade

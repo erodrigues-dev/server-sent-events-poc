@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- <script src="/lib/sse/sse.js" type="module"></script> -->
+    <script src="./index.js"></script>
+    <script src="module-sse.js" type="module"></script>
+  </head>
+  <body>
+    <button onclick="listenEvents()">Start Axios</button>
+    <button onclick="listenWithFetch()">Start Fetch</button>
+    <button onclick="writeTest()">Write test</button>
+    <button onclick="listenWithEventSource()">Start Event source</button>
+    <button onclick="closeEventSource()">Close Event source</button>
+    <button id="btn-sse-start">Start SSE</button>
+    <button id="btn-sse-close">Close SSE</button>
+
+    <h2 id="sse-text"></h2>
+  </body>
+</html>
