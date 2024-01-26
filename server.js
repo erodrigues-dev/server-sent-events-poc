@@ -6,14 +6,20 @@ const util = require('node:util');
 const Service = require('./Service');
 const Client = require('./Client');
 
+const snf = require('simple-node-framework');
+const sampleRouter = require('./api/modules/sample/route');
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public', 'dist')));
 
+app.use(sampleRouter);
+
 const server = app.listen(3000, () => {
   console.log('listening on port 3000');
+  snf.Singleton.log.info('Server', 'listening on port 3000');
 });
 
 app.get('/hc', (_, res) => {
