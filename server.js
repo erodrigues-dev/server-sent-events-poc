@@ -1,29 +1,60 @@
-import express from 'express';
-import cors from 'cors';
-import path from 'node:path';
+import process from 'node:process'
+import { promisify } from 'node:util'
+import snf from 'simple-node-framework'
 
-import { useGracefullShutdown } from './server-shutdown.js';
-import countRouter from './api/modules/count/router.js';
+import app from './app.js'
 
-const snf = require('simple-node-framework');
-const sampleRouter = require('./api/modules/sample/route');
+const { config, log } = snf.Singleton
 
-const app = express();
+const PORT = config.port || 8090
+const ENV = process.env.NODE_ENV || 'default'
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join('.', 'public', 'dist')));
-app.use(countRouter);
+const server = app.listen(PORT, () => {
+  log.info('Server', `listening on port ${PORT} in [${ENV}] environment`)
+})
 
-app.get('/api/hc', (_, res) => {
-  res.json({ ok: true });
-});
+const shutdownServer = async () => {
+  log.info('Server', 'start gracefull shutdown')
+  await promisify(server.close).bind(server)()
+  log.info('Server', 'server is closed')
+}
 
-app.use(sampleRouter);
+process.on('SIGINT', async () => {
+  log.info('Server', 'server received a SIGINT signal')
+  await shutdownServer()
+})
 
-const server = app.listen(3000, () => {
-  console.log('listening on port 3000');
-  snf.Singleton.log.info('Server', 'listening on port 3000');
-});
+process.on('SIGTERM', async () => {
+  log.info('Server', 'server received a SIGTERM signal')
+  await shutdownServer()
+})
 
-useGracefullShutdown(server);
+process.on('uncaughtException', async error => {
+  log.error('Server', 'server received a uncaughtException', {
+    error: {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    },
+    natural: {
+      errorObj: {
+        message: error.message,
+      },
+    },
+  })
+})
+
+process.on('unhandledRejection', async error => {
+  log.error('Server', 'server received a unhandledRejection', {
+    error: {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    },
+    natural: {
+      errorObj: {
+        message: error.message,
+      },
+    },
+  })
+})

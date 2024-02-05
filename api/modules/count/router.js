@@ -1,9 +1,10 @@
-import { Router } from 'express';
-import { CountController } from './Controller.js';
+import { Router } from 'express'
+import { CountController } from './Controller.js'
 
-const router = new Router();
-const controller = new CountController();
+const router = new Router()
+const controller = new CountController()
 
-router.get('/api/events', (...args) => controller.count(...args));
+router.get('/count/events', controller.count.bind(controller))
+router.post('/count/events', controller.count.bind(controller))
 
-export default router;
+export default router

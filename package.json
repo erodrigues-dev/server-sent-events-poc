@@ -5,7 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon --inspect server"
+    "start": "nodemon --inspect server",
+    "start:stg": "NODE_ENV=staging nodemon --inspect server"
   },
   "keywords": [],
   "author": "",
@@ -14,12 +15,10 @@
     "axios": "^1.6.5",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "simple-node-framework": "^6.0.14",
-    "sse.js": "^2.2.0"
+    "pack-backend-utils": "file:../../github/pack-backend-utils",
+    "simple-node-framework": "file:../../github/simple-node-framework"
   },
   "devDependencies": {
-    "nodemon": "^3.0.3",
-    "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4"
+    "nodemon": "^3.0.3"
   }
 }
