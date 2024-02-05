@@ -1,4 +1,4 @@
-class Client {
+export class Client {
   constructor(client) {
     this._client = client;
   }
@@ -40,5 +40,3 @@ class Client {
     this._onCloseCb = cb;
   }
 }
-
-module.exports = Client;

@@ -1,68 +1,60 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('node:path');
-const process = require('node:process');
-const util = require('node:util');
-const Service = require('./Service');
-const Client = require('./Client');
+import process from 'node:process'
+import { promisify } from 'node:util'
+import snf from 'simple-node-framework'
 
-const app = express();
+import app from './app.js'
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public', 'dist')));
+const { config, log } = snf.Singleton
 
-const server = app.listen(3000, () => {
-  console.log('listening on port 3000');
-});
+const PORT = config.port || 8090
+const ENV = process.env.NODE_ENV || 'default'
 
-app.get('/hc', (_, res) => {
-  res.json({ ok: true });
-});
+const server = app.listen(PORT, () => {
+  log.info('Server', `listening on port ${PORT} in [${ENV}] environment`)
+})
 
-let client;
-
-app.post('/api/data', (req, res) => {
-  if (client) {
-    client.emit('count', { count: -1 });
-  }
-
-  res.json({ ok: true });
-});
-
-app.get('/api/events', (req, res) => {
-  const service = new Service();
-  client = new Client(res);
-
-  console.log(req.headers);
-
-  client.open();
-  service.count(client);
-});
-
-const gracefullShutdown = async () => {
-  await util.promisify(server.close).bind(server)();
-  console.log('server is closed');
-  console.log('fechar conexao: mongo');
-  console.log('fechar conexao: redis');
-};
+const shutdownServer = async () => {
+  log.info('Server', 'start gracefull shutdown')
+  await promisify(server.close).bind(server)()
+  log.info('Server', 'server is closed')
+}
 
 process.on('SIGINT', async () => {
-  console.log('server received: SIGINT');
-  await gracefullShutdown();
-});
+  log.info('Server', 'server received a SIGINT signal')
+  await shutdownServer()
+})
 
 process.on('SIGTERM', async () => {
-  console.log('server received: SIGTERM');
-  await gracefullShutdown();
-});
+  log.info('Server', 'server received a SIGTERM signal')
+  await shutdownServer()
+})
 
-process.on('uncaughtException', async () => {
-  console.log('server received: uncaughtException');
-  await gracefullShutdown();
-});
+process.on('uncaughtException', async error => {
+  log.error('Server', 'server received a uncaughtException', {
+    error: {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    },
+    natural: {
+      errorObj: {
+        message: error.message,
+      },
+    },
+  })
+})
 
-process.on('unhandledRejection', async () => {
-  console.log('server received: unhandledRejection');
-  await gracefullShutdown();
-});
+process.on('unhandledRejection', async error => {
+  log.error('Server', 'server received a unhandledRejection', {
+    error: {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    },
+    natural: {
+      errorObj: {
+        message: error.message,
+      },
+    },
+  })
+})

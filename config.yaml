@@ -1,0 +1,32 @@
+app:
+  name: server-sent-events-poc
+  version: ${npm_package_version}
+cors:
+  origin: '*'
+log:
+  debug: false
+  requestResponse:
+    ignore:
+      - /
+  bunyan:
+    name: Application
+    streams:
+      - level: debug
+        stream: process.stdout
+authorization:
+  enabled: false
+  basic:
+    users:
+      - username: ${USERNAME}
+        password: ${PASSWORD}
+errorHandler:
+  ignoreDetail: true
+origin:
+  ignoreExact:
+    - /
+  ignore:
+    - /doc
+  require:
+    application: true
+    channel: false
+    device: false
