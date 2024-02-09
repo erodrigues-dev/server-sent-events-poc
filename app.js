@@ -2,10 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import snf from 'simple-node-framework'
 
-import {
-  useAfterRoutes,
-  useBeforeRoutes,
-} from 'pack-backend-utils/middlewares/index.js'
+import { middlewares } from 'pack-backend-utils'
 
 import v1Modules from './api/routers/apiV1Router.js'
 
@@ -15,10 +12,10 @@ const app = express()
 app.use(cors(config.cors))
 app.use(express.json())
 
-useBeforeRoutes(app, config, log)
+middlewares.hooks.useBeforeRoutes(app, config, log)
 
 app.use(v1Modules)
 
-useAfterRoutes(app, config)
+middlewares.hooks.useAfterRoutes(app, config)
 
 export default app
